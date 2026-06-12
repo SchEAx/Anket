@@ -1,5 +1,5 @@
 const SUPABASE_URL = "https://dmsovrbkoeivkvmlzals.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJIUzI1cmJrb2Vpdmt2bWx6YWxzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzczNTg3NTMsImV4cCI6MjA5MjkzNDc1M30.Tf_8-AEkON4hvKsWiljiDV5z_LJW7KUebIkU-0R8x_A";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRtc292cmJrb2Vpdmt2bWx6YWxzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzczNTg3NTMsImV4cCI6MjA5MjkzNDc1M30.Tf_8-AEkON4hvKsWiljiDV5z_LJW7KUebIkU-0R8x_A";
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const questions = [
@@ -59,8 +59,8 @@ form.addEventListener("submit",async(e)=>{
     message.textContent="Teşekkür ederiz. Değerlendirmeniz başarıyla gönderildi.";
     message.style.color="#0a7d28";
   }catch(err){
-    console.error(err);
-    message.textContent="Gönderim sırasında hata oluştu. Lütfen tekrar deneyin.";
+    console.error("ANKET HATASI:", err);
+    message.textContent = "Gönderim hatası: " + (err.message || "Bilinmeyen hata");
     message.style.color="#b00020";
   }finally{
     submitBtn.disabled=false;
