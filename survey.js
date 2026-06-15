@@ -69,3 +69,22 @@ form.addEventListener("submit",async(e)=>{
 });
 
 renderQuestions();
+
+
+// APK/WebView içinde anketten çıkış için güvenli kapatma
+function closeSurveyPage(){
+  try {
+    if (document.referrer && document.referrer !== window.location.href) {
+      window.location.href = document.referrer;
+      return;
+    }
+    if (window.history.length > 1) {
+      window.history.back();
+      return;
+    }
+    window.close();
+  } catch (err) {
+    try { window.history.back(); } catch (_) {}
+  }
+}
+window.closeSurveyPage = closeSurveyPage;

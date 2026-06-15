@@ -41,3 +41,32 @@ button:disabled{opacity:.65;cursor:not-allowed}.message{text-align:center;font-w
 .survey-close-btn:active{
   transform:scale(.95);
 }
+
+/* APK/WebView kapatma butonu */
+.survey-close-btn{
+  position:fixed !important;
+  top:calc(env(safe-area-inset-top, 0px) + 12px) !important;
+  right:12px !important;
+  width:46px !important;
+  height:46px !important;
+  min-width:46px !important;
+  padding:0 !important;
+  margin:0 !important;
+  border:none !important;
+  border-radius:999px !important;
+  background:#dc2626 !important;
+  color:#fff !important;
+  font-size:28px !important;
+  line-height:1 !important;
+  font-weight:900 !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  cursor:pointer !important;
+  z-index:999999 !important;
+  box-shadow:0 8px 22px rgba(0,0,0,.30) !important;
+}
+.survey-close-btn:active{ transform:scale(.94); }
+@media(max-width:520px){
+  .survey-page{ padding-top:68px; }
+}
