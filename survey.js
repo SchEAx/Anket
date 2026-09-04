@@ -1,6 +1,4 @@
-const SUPABASE_URL = "https://dmsovrbkoeivkvmlzals.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRtc292cmJrb2Vpdmt2bWx6YWxzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzczNTg3NTMsImV4cCI6MjA5MjkzNDc1M30.Tf_8-AEkON4hvKsWiljiDV5z_LJW7KUebIkU-0R8x_A";
-const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const SURVEY_API_URL = "https://api.scheax.com.tr/migration-test/api/customer-surveys";
 
 const questions = [
   "Personelimizin sizi karşılama biçimi ve nezaketi",
@@ -32,7 +30,9 @@ function renderQuestions(){
   }).join("");
 }
 
-contactAllowed.addEventListener("change",()=>phoneBox.classList.toggle("hidden",!contactAllowed.checked));
+contactAllowed.addEventListener("change",()=>{
+  phoneBox.classList.toggle("hidden",!contactAllowed.checked);
+});
 
 form.addEventListener("submit",async(e)=>{
   e.preventDefault();
@@ -43,24 +43,45 @@ form.addEventListener("submit",async(e)=>{
   try{
     const fd=new FormData(form);
     const payload={
-      q1:Number(fd.get("q1")), q2:Number(fd.get("q2")), q3:Number(fd.get("q3")), q4:Number(fd.get("q4")),
-      q5:Number(fd.get("q5")), q6:Number(fd.get("q6")), q7:Number(fd.get("q7")), q8:Number(fd.get("q8")),
+      q1:Number(fd.get("q1")),
+      q2:Number(fd.get("q2")),
+      q3:Number(fd.get("q3")),
+      q4:Number(fd.get("q4")),
+      q5:Number(fd.get("q5")),
+      q6:Number(fd.get("q6")),
+      q7:Number(fd.get("q7")),
+      q8:Number(fd.get("q8")),
       suggestion:document.getElementById("suggestion").value.trim() || null,
       contact_allowed:contactAllowed.checked,
-      phone:contactAllowed.checked ? (document.getElementById("phone").value.trim() || null) : null,
-      user_agent:navigator.userAgent
+      phone:contactAllowed.checked
+        ? (document.getElementById("phone").value.trim() || null)
+        : null
     };
 
-    const { error } = await sb.from("customer_surveys").insert(payload);
-    if(error) throw error;
+    const res=await fetch(SURVEY_API_URL,{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify(payload)
+    });
+
+    let data={};
+    try{
+      data=await res.json();
+    }catch{
+      throw new Error(`Sunucu geçersiz cevap verdi (HTTP ${res.status})`);
+    }
+
+    if(!res.ok || data.status!=="ok"){
+      throw new Error(data.message || `HTTP ${res.status}`);
+    }
 
     form.reset();
     phoneBox.classList.add("hidden");
     message.textContent="Teşekkür ederiz. Değerlendirmeniz başarıyla gönderildi.";
     message.style.color="#0a7d28";
   }catch(err){
-    console.error("ANKET HATASI:", err);
-    message.textContent = "Gönderim hatası: " + (err.message || "Bilinmeyen hata");
+    console.error("ANKET HATASI:",err);
+    message.textContent="Gönderim sırasında hata oluştu. Lütfen tekrar deneyin.";
     message.style.color="#b00020";
   }finally{
     submitBtn.disabled=false;
@@ -69,22 +90,3 @@ form.addEventListener("submit",async(e)=>{
 });
 
 renderQuestions();
-
-
-// APK/WebView içinde anketten çıkış için güvenli kapatma
-function closeSurveyPage(){
-  try {
-    if (document.referrer && document.referrer !== window.location.href) {
-      window.location.href = document.referrer;
-      return;
-    }
-    if (window.history.length > 1) {
-      window.history.back();
-      return;
-    }
-    window.close();
-  } catch (err) {
-    try { window.history.back(); } catch (_) {}
-  }
-}
-window.closeSurveyPage = closeSurveyPage;
